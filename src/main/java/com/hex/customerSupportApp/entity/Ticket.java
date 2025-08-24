@@ -1,0 +1,50 @@
+package com.hex.customerSupportApp.entity;
+
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Table(name = "tickets")
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Ticket {
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false,columnDefinition = "TEXT")
+    private String description;
+
+    @Column(nullable = false)
+    private String status;
+
+    @Column(nullable = false)
+    private String priority;
+
+    @ManyToOne
+    @JoinColumn(name="assigned_to")
+    private User assignedTo;
+
+
+    @ManyToOne
+    @JoinColumn(name="created_by",nullable = false)
+    private User createdBy;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+
+}
