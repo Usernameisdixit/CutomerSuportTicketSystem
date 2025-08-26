@@ -25,22 +25,22 @@ public class Ticket {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false,columnDefinition = "TEXT")
+    @Column(nullable = false, length = 2000)
     private String description;
 
-    @Column(nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private TicketStatus status;
 
-    @Column(nullable = false)
-    private String priority;
+    @Enumerated(EnumType.STRING)
+    private Priority priority;
 
     @ManyToOne
-    @JoinColumn(name="assigned_to")
+    @JoinColumn(name = "assigned_to")
     private User assignedTo;
 
 
     @ManyToOne
-    @JoinColumn(name="created_by",nullable = false)
+    @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
     private LocalDateTime createdAt;
