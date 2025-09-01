@@ -24,7 +24,7 @@ public class TicketHistoryService {
     }
 
 
-    public void logHistory(Ticket ticket, String action, String oldValue, String newValue, String username) {
+    public void logHistory(Ticket ticket, String action, String oldValue, String newValue, String comment, String username) {
         User updater = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
         TicketHistory history = TicketHistory.builder()
@@ -32,6 +32,7 @@ public class TicketHistoryService {
                 .action(action)
                 .oldValue(oldValue)
                 .newValue(newValue)
+                .comment(comment)
                 .updatedAt(LocalDateTime.now())
                 .updatedBy(updater)
                 .build();
@@ -46,6 +47,7 @@ public class TicketHistoryService {
                         h.getAction(),
                         h.getOldValue(),
                         h.getNewValue(),
+                        h.getComment(),
                         h.getUpdatedAt(),
                         h.getUpdatedBy().getUsername())).toList();
 

@@ -8,6 +8,7 @@ public record TicketHistoryDto(
         String action,
         String oldValue,
         String newValue,
+        String comment,
         LocalDateTime updatedAt,
         String updatedBy
 ) {

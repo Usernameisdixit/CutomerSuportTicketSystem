@@ -81,14 +81,14 @@ public class TicketService {
             }
 
             String newAssignee = ticket.getAssignedTo() != null ? ticket.getAssignedTo().getUsername() : null;
-            ticketHistoryService.logHistory(ticket, "ASSIGNED_CHANGE", oldAssignee, newAssignee, currentUser);
+            ticketHistoryService.logHistory(ticket, "ASSIGNED_CHANGE", oldAssignee, newAssignee, req.comment(), currentUser);
         }
         if (req.status() != null && !req.status().equals(ticket.getStatus())) {
             String oldStatus = ticket.getStatus() != null ? ticket.getStatus().name() : null;
             ticket.setStatus(req.status());
             String newStaus = ticket.getStatus() != null ? ticket.getStatus().name() : null;
 
-            ticketHistoryService.logHistory(ticket, "STATUS_CHANGED", oldStatus, newStaus, currentUser);
+            ticketHistoryService.logHistory(ticket, "STATUS_CHANGED", oldStatus, newStaus, req.comment(), currentUser);
 
         }
         return mapToResponse(ticketRepository.save(ticket));

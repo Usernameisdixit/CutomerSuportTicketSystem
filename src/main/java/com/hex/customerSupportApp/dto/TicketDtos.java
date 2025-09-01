@@ -20,6 +20,7 @@ public class TicketDtos {
                                       String description,
                                       TicketStatus status,
                                       String priority,
+                                      String comment,
                                       String assignedTo) {
     }
 

@@ -28,6 +28,8 @@ public class TicketHistory {
     private String oldValue;
     private String newValue;
 
+    private String comment;
+
 
     private LocalDateTime updatedAt;
 
