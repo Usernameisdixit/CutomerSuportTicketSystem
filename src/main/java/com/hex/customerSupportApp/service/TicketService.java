@@ -1,4 +1,4 @@
-package com.hex.customerSupportApp.security;
+package com.hex.customerSupportApp.service;
 
 import com.hex.customerSupportApp.dto.TicketDtos;
 import com.hex.customerSupportApp.entity.Ticket;
@@ -43,10 +43,50 @@ public class TicketService {
     }
 
 
+    public List<TicketDtos.TicketResponse> getCustomerTickets() {
+        return ticketRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
+
+    }
+
     public List<TicketDtos.TicketResponse> getAllTickets() {
         return ticketRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
 
     }
+
+    public TicketDtos.TicketResponse updateTicket(Long id, TicketDtos.UpdateTicketRequest req) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUser = auth.getName();
+        boolean isAdmin = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        Ticket ticket = ticketRepository.findById(id).orElseThrow();
+
+        if (!isAdmin && auth.getAuthorities().stream().noneMatch(a -> a.getAuthority().equals("ROLE_AGENT"))) {
+            throw new RuntimeException("You are not allowed to update tickets.");
+        }
+
+//in the req we are assigning the assignedTo value so we have kept !=null
+        if (req.assignedTo() != null) {
+            if (isAdmin) {
+                User assignee = userRepository.findByUsername(req.assignedTo()).orElseThrow(() -> new RuntimeException("User not found"));
+                ticket.setAssignedTo(assignee);
+            } else {
+
+
+                if (!req.assignedTo().equals(currentUser)) {
+                    throw new RuntimeException(("Agents can only assign tickets to themselves."));
+                }
+                User assignee = userRepository.findByUsername(currentUser).orElseThrow();
+                ticket.setAssignedTo(assignee);
+            }
+
+        }
+        if (req.status() != null) {
+            ticket.setStatus(req.status());
+
+        }
+        return mapToResponse(ticketRepository.save(ticket));
+    }
+
 
     private TicketDtos.TicketResponse mapToResponse(Ticket ticket) {
         return new TicketDtos.TicketResponse(ticket.getId(), ticket.getTitle(), ticket.getDescription(), ticket.getStatus().name(), ticket.getPriority().name(), ticket.getCreatedBy() != null ? ticket.getCreatedBy().getUsername() : null, ticket.getAssignedTo() != null ? ticket.getAssignedTo().getUsername() : null);
