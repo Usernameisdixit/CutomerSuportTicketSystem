@@ -3,5 +3,9 @@ package com.hex.customerSupportApp.repository;
 import com.hex.customerSupportApp.entity.TicketHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TicketHistoryRepository extends JpaRepository<TicketHistory,Long> {
+import java.util.List;
+
+public interface TicketHistoryRepository extends JpaRepository<TicketHistory, Long> {
+
+    List<TicketHistory> findByTicketIdOrderByUpdatedAtDesc(Long ticketId);
 }

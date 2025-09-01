@@ -1,8 +1,11 @@
 package com.hex.customerSupportApp.controller;
 
 import com.hex.customerSupportApp.dto.TicketDtos;
+import com.hex.customerSupportApp.dto.TicketHistoryDto;
+import com.hex.customerSupportApp.service.TicketHistoryService;
 import com.hex.customerSupportApp.service.TicketService;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -11,14 +14,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/tickets")
+@AllArgsConstructor
 public class TicketController {
 
     private final TicketService ticketService;
 
+    private final TicketHistoryService ticketHistoryService;
 
-    public TicketController(TicketService ticketService) {
-        this.ticketService = ticketService;
-    }
 
     @PostMapping
     @PreAuthorize("hasRole('CUSTOMER')")
@@ -46,5 +48,13 @@ public class TicketController {
     public ResponseEntity<TicketDtos.TicketResponse> updateTicket(@PathVariable Long id, @RequestBody TicketDtos.UpdateTicketRequest req) {
         return ResponseEntity.ok(ticketService.updateTicket(id, req));
     }
+
+
+    @GetMapping("/{id}/history")
+    @PreAuthorize("hasAnyRole('CUSTOMER','AGENT','ADMIN')")
+    public List<TicketHistoryDto> getTicketHistory(@PathVariable Long id) {
+        return ticketHistoryService.getHistory(id);
+    }
+
 
 }

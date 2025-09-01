@@ -21,17 +21,19 @@ public class TicketHistory {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "ticket_id",nullable = false)
+    @JoinColumn(name = "ticket_id", nullable = false)
     private Ticket ticket;
 
-    private  String status;
+    private String action;
+    private String oldValue;
+    private String newValue;
+
 
     private LocalDateTime updatedAt;
 
     @ManyToOne
-    @JoinColumn(name="updated_by")
+    @JoinColumn(name = "updated_by")
     private User updatedBy;
-
 
 
 }

@@ -4,8 +4,10 @@ import com.hex.customerSupportApp.dto.TicketDtos;
 import com.hex.customerSupportApp.entity.Ticket;
 import com.hex.customerSupportApp.entity.TicketStatus;
 import com.hex.customerSupportApp.entity.User;
+import com.hex.customerSupportApp.repository.TicketHistoryRepository;
 import com.hex.customerSupportApp.repository.TicketRepository;
 import com.hex.customerSupportApp.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -14,16 +16,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Service
 public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final UserRepository userRepository;
+    private final TicketHistoryService ticketHistoryService;
 
-    public TicketService(TicketRepository ticketRepository, UserRepository userRepository) {
-        this.ticketRepository = ticketRepository;
-        this.userRepository = userRepository;
-    }
 
     public TicketDtos.TicketResponse createTicket(TicketDtos.CreateTicketRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -66,6 +66,7 @@ public class TicketService {
 
 //in the req we are assigning the assignedTo value so we have kept !=null
         if (req.assignedTo() != null) {
+            String oldAssignee = ticket.getAssignedTo() != null ? ticket.getAssignedTo().getUsername() : null;
             if (isAdmin) {
                 User assignee = userRepository.findByUsername(req.assignedTo()).orElseThrow(() -> new RuntimeException("User not found"));
                 ticket.setAssignedTo(assignee);
@@ -79,9 +80,15 @@ public class TicketService {
                 ticket.setAssignedTo(assignee);
             }
 
+            String newAssignee = ticket.getAssignedTo() != null ? ticket.getAssignedTo().getUsername() : null;
+            ticketHistoryService.logHistory(ticket, "ASSIGNED_CHANGE", oldAssignee, newAssignee, currentUser);
         }
-        if (req.status() != null) {
+        if (req.status() != null && !req.status().equals(ticket.getStatus())) {
+            String oldStatus = ticket.getStatus() != null ? ticket.getStatus().name() : null;
             ticket.setStatus(req.status());
+            String newStaus = ticket.getStatus() != null ? ticket.getStatus().name() : null;
+
+            ticketHistoryService.logHistory(ticket, "STATUS_CHANGED", oldStatus, newStaus, currentUser);
 
         }
         return mapToResponse(ticketRepository.save(ticket));
