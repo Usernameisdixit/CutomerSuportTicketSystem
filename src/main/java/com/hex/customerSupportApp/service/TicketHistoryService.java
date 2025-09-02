@@ -6,22 +6,18 @@ import com.hex.customerSupportApp.entity.TicketHistory;
 import com.hex.customerSupportApp.entity.User;
 import com.hex.customerSupportApp.repository.TicketHistoryRepository;
 import com.hex.customerSupportApp.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class TicketHistoryService {
 
     private final TicketHistoryRepository ticketHistoryRepository;
     private final UserRepository userRepository;
-
-
-    public TicketHistoryService(TicketHistoryRepository ticketHistoryRepository, UserRepository userRepository) {
-        this.ticketHistoryRepository = ticketHistoryRepository;
-        this.userRepository = userRepository;
-    }
 
 
     public void logHistory(Ticket ticket, String action, String oldValue, String newValue, String comment, String username) {

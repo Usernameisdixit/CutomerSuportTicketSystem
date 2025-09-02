@@ -8,6 +8,7 @@ import com.hex.customerSupportApp.repository.TicketHistoryRepository;
 import com.hex.customerSupportApp.repository.TicketRepository;
 import com.hex.customerSupportApp.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
+@Slf4j
 public class TicketService {
 
     private final TicketRepository ticketRepository;
@@ -26,6 +28,8 @@ public class TicketService {
 
 
     public TicketDtos.TicketResponse createTicket(TicketDtos.CreateTicketRequest request) {
+        log.info("Creating Ticket with title:{}", request.title());
+        log.debug("Full Ticket request Payload:{}", request);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User creator = userRepository.findByUsername(auth.getName()).orElseThrow();
 

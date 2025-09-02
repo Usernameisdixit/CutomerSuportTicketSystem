@@ -4,6 +4,10 @@ import com.hex.customerSupportApp.dto.AuthDtos;
 import com.hex.customerSupportApp.entity.User;
 import com.hex.customerSupportApp.repository.UserRepository;
 import com.hex.customerSupportApp.security.JwtService;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,19 +16,14 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
+@AllArgsConstructor
+@Slf4j
 public class AuthService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwt;
-
-
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwt) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.authenticationManager = authenticationManager;
-        this.jwt = jwt;
-    }
 
 
     public AuthDtos.AuthResponse register(AuthDtos.RegisterRequest req) {
@@ -42,6 +41,7 @@ public class AuthService {
                 .build();
         userRepository.save(user);
         String token = jwt.generateToken(user.getUsername(), Map.of("role", user.getRole()));
+
         return new AuthDtos.AuthResponse(token, user.getUsername(), user.getRole().name());
     }
 
